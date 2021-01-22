@@ -1,6 +1,6 @@
 # school-notes-frontend
 
-__Version: >3.x.x__ 
+__Version: >3.x.x__  
 __Compatible with school-notes-backend@3.x.x or later__
 
 ## Installation
