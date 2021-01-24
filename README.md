@@ -7,9 +7,7 @@ __Compatible with school-notes-backend@3.x.x or later__
 
 __!__ *You need to install the frontend AND backend version to use 'School Notes'*
 
-#### Native (Linux)
-
-#### Docker
+#### Native (Nginx Linux)
 
 #### Backend
 [Documentation for installing the backend version](https://github.com/osourcet/school-notes-backend/blob/stable/README.md)
