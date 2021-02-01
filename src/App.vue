@@ -3,11 +3,12 @@
         <Nav></Nav>
         <Info></Info>
         <Account></Account>
+        <Settings></Settings>
         <v-container
             fluid
             fill-height
             tag="div"
-            style="width 100%:"
+            style="width 100%"
             flex-column
             justify-center
             align-center
@@ -67,34 +68,34 @@
 import Nav from '@/components/Nav.vue'
 import Info from '@/components/Info.vue'
 import Account from '@/components/Account.vue'
+import Settings from '@/components/Settings.vue'
 
 import {version} from "./../package.json"
 
 export default {
     name: 'App',
 
-    data: () => ({
-        errors: [],
-        warnings: [],
-        infos: [],
-    }),
+    computed: {
+        errors () {
+            return this.$store.getters.errors
+        },
+        warnings () {
+            return this.$store.getters.warnings
+        },
+        infos () {
+            return this.$store.getters.infos
+        }
+    },
 
     mounted () {
-        if (!(!this.$store.state.api.url == "" /* &&  fetch to api */))
-            this.errors.push("Es konnte keine Verbindung zur API aufgebaut werden!")
-        if (this.$store.state.development.errors && this.$store.state.development.errors.length)
-            this.$store.state.development.errors.forEach(error => {this.errors.push(error)})
+        if (/(alpha|beta)/.test(version))
+            this.$store.commit('WARNING_ADD', 1)
 
-        if (/(alpha|beta)/.test(version) && /pre/.test(version))
-            this.warnings.push("Sie benutzen eine unvollständige Testversion!")
-        else if (/(alpha|beta)/.test(version))
-            this.warnings.push("Sie benutzen eine Testversion!")
-
-        if (!this.$store.state.signed_in)
-            this.infos.push("Sie sind nicht angemeldet.")
+        if (this.$store.state.account.jwt == '')
+            this.$store.commit('INFO_ADD', "Sie sind nicht angemeldet.")
 
         if (/(Android)/.test(navigator.userAgent))
-            this.infos.push(`
+            this.$store.commit('INFO_ADD', `
             <div class="v-alert__content">
                 <div class="row align-center">
                     <!--<div class="grow col"> 
@@ -113,8 +114,8 @@ export default {
     components: {
         Nav,
         Info,
-        Account
+        Account,
+        Settings
     },
-
 };
 </script>

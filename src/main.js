@@ -5,10 +5,16 @@ import store from './store'
 import vuetify from './plugins/vuetify'
 import dayjs from 'dayjs'
 import UUID from 'vue-uuid'
+import axios from 'axios'
+import VueClipboards from 'vue-clipboards'
 
 Vue.config.productionTip = false
 
 Vue.use(UUID)
+Vue.use(VueClipboards)
+
+Vue.prototype.$axios = axios
+Vue.prototype.$navigator = navigator
 
 Vue.mixin({
     methods: {
@@ -41,7 +47,7 @@ const vm = new Vue({
     vuetify,
     render: function (h) { return h(App) },
     beforeCreate () { 
-        this.$store.commit('INIT')
+        this.$store.dispatch('init')
     }
 }).$mount('#app')
 

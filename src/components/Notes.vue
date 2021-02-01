@@ -108,101 +108,187 @@
             max-width="600px"
         >
             <v-card>
-                <v-card-title class="headline grey lighten-4">
-                    <v-icon class="mr-2">mdi-note-plus</v-icon>
-                    Notiz erstellen
-                </v-card-title>
-                <v-card-text>
-                    <v-container>
-                        <v-row>
-                            <v-col cols="12">
-                                <v-text-field
-                                    v-model="createNoteData.title"
-                                    label="Titel"
-                                    counter
-                                    :rules="[rules.required]"
-                                    clearable
-                                ></v-text-field>
-                                <v-combobox
-                                    v-model="createNoteData.subject"
-                                    :items="$store.state.subjects"
-                                    label="Schulfach"
-                                    :rules="[rules.required]"
-                                    clearable
-                                ></v-combobox>
-                                <v-dialog
-                                    ref="dialog"
-                                    v-model="showDatePicker"
-                                    :return-value.sync="createNoteData.date"
-                                    persistent
-                                    width="290px"
-                                >
-                                    <template v-slot:activator="{ on, attrs }">
-                                        <v-text-field
-                                            v-model="createNoteData.date"
-                                            label="Bis wann es erledigt werden soll"
-                                            readonly
-                                            v-bind="attrs"
-                                            v-on="on"
-                                            :rules="[rules.required]"
-                                            clearable
-                                        ></v-text-field>
-                                    </template>
-                                    <v-date-picker
-                                        v-model="createNoteData.date"
-                                        scrollable
-                                    >
-                                        <v-spacer></v-spacer>
-                                        <v-btn
-                                            text
-                                            @click="showDatePicker = false"
-                                        >
-                                            Abbrechen
-                                        </v-btn>
-                                        <v-btn
-                                            text
-                                            color="primary"
-                                            @click="$refs.dialog.save(createNoteData.date)"
-                                        >
-                                            OK
-                                        </v-btn>
-                                    </v-date-picker>
-                                </v-dialog>
-                                <v-switch
-                                    v-model="createNoteData.important"
-                                    :label="`Als wichtige Notiz markieren`"
-                                ></v-switch>
-                                <v-textarea
-                                    v-model="createNoteData.content"
-                                    label="Inhalt"
-                                    hint="Markdown kann nicht benutzt werden"
-                                    :rules="[rules.required]"
-                                    clearable
-                                ></v-textarea>
-                                
-                            </v-col>
-                        </v-row>
-                    </v-container>
-                </v-card-text>
-                <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn
-                        color=""
-                        text
-                        @click="resetCreateNoteData"
-                    >
-                        Abbrechen
-                    </v-btn>
-                    
-                    
-                    <v-btn
-                        color="blue darken-1"
-                        text
-                        @click="createNote"
-                    >
+                <v-form ref="createNote" v-model="createNoteValid">
+                    <v-card-title class="headline grey lighten-4">
+                        <v-icon class="mr-2">mdi-note-plus</v-icon>
                         Notiz erstellen
-                    </v-btn>
-                </v-card-actions>
+                    </v-card-title>
+                    <v-card-text>
+                        <v-container>
+                            <v-row>
+                                <v-col cols="12">
+                                    <v-text-field
+                                        v-model="createNoteData.title"
+                                        label="Titel"
+                                        counter
+                                        :rules="[rules.required]"
+                                        clearable
+                                    ></v-text-field>
+                                    <v-combobox
+                                        v-model="createNoteData.subject"
+                                        :items="$store.state.subjects"
+                                        label="Schulfach"
+                                        :rules="[rules.required]"
+                                        clearable
+                                    ></v-combobox>
+                                    <v-dialog
+                                        ref="dialog"
+                                        v-model="showDatePicker"
+                                        :return-value.sync="createNoteData.date"
+                                        persistent
+                                        width="290px"
+                                    >
+                                        <template v-slot:activator="{ on, attrs }">
+                                            <v-text-field
+                                                v-model="createNoteData.date"
+                                                label="Bis wann es erledigt werden soll"
+                                                readonly
+                                                v-bind="attrs"
+                                                v-on="on"
+                                                :rules="[rules.required]"
+                                                clearable
+                                            ></v-text-field>
+                                        </template>
+                                        <v-date-picker
+                                            v-model="createNoteData.date"
+                                            scrollable
+                                        >
+                                            <v-spacer></v-spacer>
+                                            <v-btn
+                                                text
+                                                @click="showDatePicker = false"
+                                            >
+                                                Abbrechen
+                                            </v-btn>
+                                            <v-btn
+                                                text
+                                                color="primary"
+                                                @click="$refs.dialog.save(createNoteData.date)"
+                                            >
+                                                OK
+                                            </v-btn>
+                                        </v-date-picker>
+                                    </v-dialog>
+                                    <v-switch
+                                        v-model="createNoteData.important"
+                                        :label="`Als wichtige Notiz markieren`"
+                                    ></v-switch>
+                                    <v-textarea
+                                        v-model="createNoteData.content"
+                                        label="Inhalt"
+                                        hint="Markdown kann nicht benutzt werden"
+                                        :rules="[rules.required]"
+                                        clearable
+                                    ></v-textarea>
+                                    
+                                </v-col>
+                            </v-row>
+                        </v-container>
+                    </v-card-text>
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn
+                            color=""
+                            text
+                            @click="resetCreateNoteData"
+                        >
+                            Abbrechen
+                        </v-btn>
+                        
+                        
+                        <v-btn
+                            color="blue darken-1"
+                            text
+                            @click="createNote"
+                        >
+                            Notiz erstellen
+                        </v-btn>
+                    </v-card-actions>
+                </v-form>
+            </v-card>
+        </v-dialog>
+
+        <!-- share notes -->
+        <v-dialog
+            v-model="showShareNotes"
+            persistent
+            max-width="600px"
+        >
+            <v-card>
+                <v-form ref="shareNotes">
+                    <v-card-title class="headline grey lighten-4">
+                        <v-icon class="mr-2">mdi-share-variant</v-icon>
+                        Notizen teilen
+                    </v-card-title>
+                    <v-card-text>
+                        <v-container>
+                            <v-row>
+                                <v-col cols="12">
+                                    <v-text-field
+                                        v-model="shareNotesLink"
+                                        label="Link"
+                                        readonly
+                                    >
+                                        <template
+                                            v-if="shareNotesLink"
+                                            v-slot:append
+                                        >
+                                            <v-tooltip
+                                                bottom
+                                            >
+                                                <template v-slot:activator="{ on }">
+                                                    <v-icon 
+                                                        v-on="on"
+                                                        v-clipboard="shareNotesLink"
+                                                    >
+                                                        mdi-content-copy
+                                                    </v-icon>
+                                                </template>
+                                                Link kopieren
+                                            </v-tooltip>
+                                        </template>
+                                        <template
+                                            v-if="shareNotesLink"
+                                            v-slot:append-outer
+                                        >
+                                            <v-tooltip
+                                                bottom
+                                            >
+                                                <template v-slot:activator="{ on }">
+                                                    <v-icon 
+                                                        v-on="on"
+                                                        @click="showShareQRCode = !showShareQRCode"
+                                                    >
+                                                        {{ !showShareQRCode ? 'mdi-qrcode' : 'mdi-qrcode-remove' }}
+                                                    </v-icon>
+                                                </template>
+                                                {{ showShareQRCode ? 'QR Code verbergen' : 'QR Code anzeigen' }}
+                                            </v-tooltip>
+                                        </template>
+                                    </v-text-field>                                
+                                </v-col>
+                                <v-col
+                                    v-if="showShareQRCode"
+                                    cols="12"
+                                >
+                                    <v-layout justify-center>
+                                        <img :src="`http://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${shareNotesLink}`" >
+                                    </v-layout>
+                                </v-col>
+                            </v-row>
+                        </v-container>
+                    </v-card-text>
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn
+                            color="primary"
+                            text
+                            @click="resetShareNotesData"
+                        >
+                            Schließen
+                        </v-btn>
+                    </v-card-actions>
+                </v-form>
             </v-card>
         </v-dialog>
         
@@ -340,11 +426,11 @@
         > 
             <Note
                 v-for="note in sortedNotes" 
-                :key="note.id"
+                :key="note._id"
 
                 :note="note"
                 :noteEdited="note"
-                :checked="checked.includes(note.id)"
+                :checked="checked.includes(note._id)"
                 :duringChecking="Boolean(checked.length)"
 
                 @check="checkNote"
@@ -362,8 +448,12 @@ export default {
         return {
             checked: [],
             search: "",
+
             showCreateNote: false,
             showDatePicker: false,
+            showShareNotes: false,
+            createNoteValid: false,
+
             createNoteData: {
                 title: "",
                 subject: "",
@@ -372,9 +462,14 @@ export default {
                 success: false,
                 content: "",
             },
+
+            shareNotesLink: "",
+            showShareQRCode: false,
+
             rules: {
                 required: v => !!v || 'Dieses Feld muss ausgefüllt werden!',
             },
+
             sortSettings: {
                 showSortSettings: false,
 
@@ -384,41 +479,69 @@ export default {
                 showSuccessNotes: false,
                 sortBy: 'title',
                 sortUpDown: 1
-            }
+            },
+
+
         }
     },
     methods: {
         checkNote(note_checked) {
-            if(this.checked.includes(note_checked.id))
-                this.checked = this.checked.filter(noteID => noteID != note_checked.id)
+            if(this.checked.includes(note_checked._id))
+                this.checked = this.checked.filter(noteID => noteID != note_checked._id)
             else
-                this.checked.push(note_checked.id)
+                this.checked.push(note_checked._id)
         },
+
         checkOnlyNote(note_checked) {
-            if(!this.checked.includes(note_checked.id))
-                this.checked.push(note_checked.id)
+            if(!this.checked.includes(note_checked._id))
+                this.checked.push(note_checked._id)
         },
+
         createNote() {
-            if (this.createNoteData.title != "" && this.createNoteData.subject != "" && this.createNoteData.date != "" && this.createNoteData.content != "") {
-                this.createNoteData.id = this.$uuid.v4()
-                this.$store.dispatch('noteAdd', {note: this.createNoteData})
+            this.$refs.createNote.validate()
+            if (this.createNoteValid) {
+                this.$store.dispatch('noteAdd', {note: {
+                    _id: this.$uuid.v4(),
+                    title: this.createNoteData.title,
+                    subject: this.createNoteData.subject,
+                    date: new Date(this.createNoteData.date.split('-')[0], this.createNoteData.date.split('-')[1] - 1, this.createNoteData.date.split('-')[2]).getTime(),
+                    important: this.createNoteData.important,
+                    success: this.createNoteData.success,
+                    content: this.createNoteData.content,
+                }})
                 this.resetCreateNoteData()
             }
         },
+
         resetCreateNoteData() {
-            this.createNoteData = {
-                title: "",
-                subject: "",
-                date: "",
-                important: false,
-                success: false,
-                content: "",
-            }
+            this.$refs.createNote.reset()
             this.showCreateNote = false
         },
-        shareNotes() {},
+
+        async shareNotes() {
+            this.showShareNotes = true
+
+            let r = await this.$axios({
+                method: 'POST', 
+                url: `/share`, 
+                baseURL: this.$store.state.backend.baseUrl,
+                data: {
+                    notes: this.$store.getters.getNotes.filter(n => this.checked.includes(n._id))
+                }
+            })
+            console.log(r.data);
+            this.shareNotesLink = `${window.location.href}share?_id=${r.data._id}`
+            
+        },
+
+        resetShareNotesData() {
+            this.$refs.shareNotes.reset()
+            this.showShareNotes = false
+        },
+
         deleteNotes() {
             this.$store.dispatch('notesDelete', {list: this.checked})
+            this.checked = []
         },
     },
     computed: {

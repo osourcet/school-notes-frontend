@@ -21,7 +21,7 @@
                         </tr>
                         <tr>
                             <td>Backend Version:</td>
-                            <td>{{ versionBackend }}</td>
+                            <td>{{ baseVersion }}</td>
                         </tr>
                         <tr>
                             <td>Development:</td>
@@ -87,7 +87,26 @@
                             <v-icon>mdi-github</v-icon>
                         </v-btn>
                     </template>
-                    <span>Github</span>
+                    <span>Github - Frontend</span>
+                </v-tooltip>
+                <v-tooltip bottom>
+                    <template v-slot:activator="{ on, attrs }">
+                        <v-btn
+                            elevation="2"
+                            fab
+                            small
+
+                            v-bind="attrs"
+                            v-on="on"
+
+                            class="orange"
+
+                            @click="openURL('https://github.com/osourcet/school-notes', true);"
+                        >
+                            <v-icon>mdi-github</v-icon>
+                        </v-btn>
+                    </template>
+                    <span>Github - Backend</span>
                 </v-tooltip>
                 <v-tooltip bottom>
                     <template v-slot:activator="{ on, attrs }">
@@ -153,8 +172,12 @@ export default {
     data () {
         return {
             versionFrontend: version,
-            versionBackend: "Connection interrupted",
         }
     },
+    computed: {
+        baseVersion () {
+            return this.$store.state.backend.version
+        }
+    }
 }
 </script>
