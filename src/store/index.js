@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import { uuid } from 'vue-uuid'
 import axios from 'axios'
+import { io } from 'socket.io-client'
 
 Vue.use(Vuex)
 
@@ -13,7 +14,8 @@ export default new Vuex.Store({
         show_info: false,
         backend:{
             baseUrl: '',
-            version: ''
+            version: '',
+            socket: undefined,
         },
         account: {
             username: "",
@@ -108,8 +110,12 @@ export default new Vuex.Store({
 
         INFO_DELETE: () => {},
 
-        INIT_BACKEND: async () => {
-            
+        INIT_BACKEND: (state, { version }) => {
+            state.backend.version = version
+        },
+
+        INIT_SOCKET: (state, socket) => {
+            state.backend.socket = socket
         },
 
         INIT_LOCAL_STORAGE: state => {
@@ -123,17 +129,21 @@ export default new Vuex.Store({
             localStorage.setItem('school-notes', JSON.stringify({notes: state.notes}))
         },
 
-        SYNC_NOTES_API: () => {},
+        SYNC_NOTES_SOCKET: state => {
+            if (state.backend.socket)
+                state.backend.socket.emit('pushNotes', { notes: state.notes })
+        },
 
-        SIGN_IN: (state, userdata) => {
-            state.account.username = userdata.username
-            state.account.jwt = userdata.jwt
+        SIGN_IN: (state, { username, jwt }) => {
+            state.account.username = username
+            state.account.jwt = jwt
         }
     },
     actions: {
         noteAdd ({ commit }, note) {
             commit('NOTE_ADD', note)
             commit('SYNC_NOTES_LOCAL')
+            commit('SYNC_NOTES_SOCKET')
         },
 
         noteUpdate ({ commit }, note) {
@@ -146,22 +156,31 @@ export default new Vuex.Store({
             commit('SYNC_NOTES_LOCAL')
         },
 
-        async init({ state, commit }) {
+        async init({ state, commit, dispatch }) {
+            // set base backend URL
             state.backend.baseUrl = process.env.VUE_APP_BACKEND_URL || ''
+
             try {
+                // check if backend sends a response
                 let r = await axios({method: 'GET', url: '', baseURL: state.backend.baseUrl})
+
                 if (r.status === 200 && r.data.type === 'school-notes-backend'){
-                    state.backend.version = r.data.version.toString()
-                    commit('INIT_BACKEND')
+
+                    // check if user is signed in
+                    if (state.account.jwt && state.account.jwt != "")
+                        dispatch('connectToSocket')
+
+                    commit('INIT_BACKEND', {
+                        version: r.data.version.toString(),
+                    })
                 }
                 else {
                     state.backend.version = 'Connection lost'
                     commit('ERROR_ADD', 1)
                 }
-                commit('INIT_BACKEND')
             }
             catch (e) {
-                state.backend.version = state.backend.baseUrl//'Connection lost'
+                state.backend.version = 'Connection lost'
                 commit('ERROR_ADD', 1)
             }
             finally{
@@ -169,8 +188,32 @@ export default new Vuex.Store({
             }
         },
 
-        signIn ({ commit }, userdata) {
-            commit('SIGN_IN', userdata)
+        connectToSocket ({ state, commit }) {
+            const socket = io(state.backend.baseUrl, {
+                auth: {
+                    token: state.account.jwt
+                }
+            })
+
+            socket.on('pullNotes', notes => {
+                console.log(notes)
+            })
+
+            commit('INIT_SOCKET', socket)
+        },
+
+        signIn ({ commit, dispatch}, userdata) {
+            try{
+                commit('SIGN_IN', userdata)
+                dispatch('connectToSocket')
+            }
+            catch (e) {
+                console.log(e)
+            }
+        },
+
+        signOut ({ commit }) {
+            commit('SIGN_OUT')
         }
     },
     getters: {

@@ -46,7 +46,7 @@ const vm = new Vue({
     store,
     vuetify,
     render: function (h) { return h(App) },
-    beforeCreate () { 
+    beforeCreate () {
         this.$store.dispatch('init')
     }
 }).$mount('#app')

@@ -102,7 +102,7 @@ export default {
                         Sie benutzen ein Android Gerät.
                     </div>-->
                     <div class="shrink col">
-                        <a href="sn://schoolnotes.ddns.net" class="v-btn v-btn--is-elevated v-btn--has-bg theme--light v-size--default">
+                        <a href="schoolnotes://schoolnotes.servehttp.com" class="v-btn v-btn--is-elevated v-btn--has-bg theme--light v-size--default">
                             <span class="v-btn__content">In Android App öffnen</span>
                         </a>
                     </div>
